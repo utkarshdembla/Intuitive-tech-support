@@ -1,5 +1,6 @@
 package com.techSupport.intuitiveTechSupportapi.repository;
 
+import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -21,6 +22,10 @@ public interface SlotOnDateRepository extends CrudRepository<SlotOnDateDTO, BigI
 
     List<SlotOnDateDTO> findBydate(Date date);
 
-    @Query(value = "select * from date_slots where date = ?1 AND booked_count < ?2",nativeQuery = true)
-    List<SlotOnDateDTO> findAvailableSlots(Date date,int maxCount);
+    /*@Query(value = "select * from date_slots where date = ?1 AND booked_count < ?2",nativeQuery = true)
+    List<SlotOnDateDTO> findAvailableSlots(Date date,int maxCount);*/
+
+    @Query(value = "select * from slots where date = ?1 AND start_time after ?2",nativeQuery = true)
+    List<SlotOnDateDTO> findByTime(String futureTime);
+
 }

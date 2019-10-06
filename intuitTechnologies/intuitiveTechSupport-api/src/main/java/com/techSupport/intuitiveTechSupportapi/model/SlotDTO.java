@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -29,11 +30,11 @@ public class SlotDTO {
 
     @NotNull
     @Column(name="start_time")
-    private Time startTime;
+    private Date startTime;
 
     @NotNull
     @Column(name="end_time")
-    private Time endTime;
+    private Date endTime;
 
     @Column(nullable = false, updatable = false, name = "created_at")
     @Temporal(TemporalType.DATE)

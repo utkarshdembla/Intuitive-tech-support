@@ -20,6 +20,9 @@ public interface SlotOnDateRepository extends JpaRepository<SlotOnDateDTO, BigIn
     @Query(value = "select * from date_slots where date = ?1",nativeQuery = true)
     List<SlotOnDateDTO> findBydate(String date);
 
+    @Query(value = "select * from date_slots where date < ?1",nativeQuery = true)
+    List<SlotOnDateDTO> findForAllPreviousDates(Date today);
+
     @Query(value = "select * from date_slots where date = ?1 AND booked_count < ?2",nativeQuery = true)
     List<SlotOnDateDTO> findAvailableSlots(Date date,int maxCount);
 

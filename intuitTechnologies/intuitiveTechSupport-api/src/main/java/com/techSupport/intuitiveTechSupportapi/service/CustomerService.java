@@ -6,14 +6,13 @@ import com.techSupport.intuitiveTechSupportapi.entity.ScheduleCall;
 import com.techSupport.intuitiveTechSupportapi.exceptions.*;
 import com.techSupport.intuitiveTechSupportapi.model.*;
 import com.techSupport.intuitiveTechSupportapi.repository.*;
-import com.techSupport.intuitiveTechSupportapi.util.DateUtility;
+import com.techSupport.intuitiveTechSupportapi.utility.DateUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.sql.Time;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -67,8 +66,6 @@ public class CustomerService {
     @Value(Constants.timeFormat)
     private String timeFormat;
 
-    //this method returns the customer, search parameters can be:: {email,phonenumber}
-
     public CustomerDTO getCustomer(String searchString) throws EntityNotFoundException {
         try {
             log.info("Searching customer by :: {}", searchString);
@@ -86,50 +83,7 @@ public class CustomerService {
         }
     }
 
-    public CustomerDTO saveCustomer(Customer customer) throws EntitySaveException {
-        try {
-            log.info("Customer information received :: {}",customer.toString());
-            CustomerDTO customerDTO = new CustomerDTO();
-            customerDTO.setFirstName(customer.getFirstName());
-            customerDTO.setLastName(customer.getLastName());
-            customerDTO.setEmail(customer.getEmail());
-            customerDTO.setPhoneNumber(customer.getPhoneNumber());
-            customerDTO = customerRepository.save(customerDTO);
-            log.info("Customer information saved in database :: {}", customerDTO.toString());
-            return customerDTO;
-        }
-        catch(Exception ex) {
-            String errorMessage = "Error occured while saving customer..";
-            log.error(errorMessage);
-            throw new EntitySaveException(errorMessage);
-        }
-    }
 
-    private void ifSoltCanBeBooked(ScheduleCall scheduleCall) throws BookSlotException {
-        try {
-            String time = utility.getDateStringFromDate(utility.getFutureTime(0), timeFormat);
-            String future = utility.getDateStringFromDate(utility.getFutureTime(2), timeFormat);
-            String today = utility.getDateStringFromDate(utility.getFutureDate(0), dateFormat);
-
-            if (today.equals(scheduleCall.getDate())) {
-                List<SlotDTO> slotList = slotRepository.findByTime(time, future);
-
-                for (SlotDTO slotValue : slotList) {
-                    SlotDTO slotDTO = slotRepository.findBySlotId(scheduleCall.getSlotId());
-                    if (slotDTO.getStartTime().equals(slotValue.getStartTime()) && slotDTO.getEndTime().equals(slotValue.getEndTime()))
-                        throw new BookSlotException("Customer cannot book the slot!!");
-                }
-            }
-        }
-        catch (BookSlotException ex) {
-            log.error(ex.getMessage());
-            throw ex;
-        }
-        catch (Exception ex){
-            String errorMessage = String.format("Some exception occured while checking if slot can be booked.. with error ====> %s",ex.getMessage());
-            throw new BookSlotException(errorMessage);
-        }
-    }
 
     public CallSupportDTO bookCall(ScheduleCall scheduleCall) throws BookSlotException, EmailNotificationException {
 
@@ -140,27 +94,10 @@ public class CustomerService {
             CallSupportDTO callSupportDTO = new CallSupportDTO();
 
             SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyDateAndSlotId(utility.getDateFromDateString(scheduleCall.getDate(), dateFormat), scheduleCall.getSlotId());
-            if (slotOnDateDTO == null) {
-                String errorMessage = String.format("Slot does not exist for slotId :: %s and date :: %s", scheduleCall.getSlotId(), scheduleCall.getDate());
-                log.error(errorMessage);
-                throw new BookSlotException(errorMessage);
-            }
-            if (slotOnDateDTO.getBookedCount() < maxNoOfSlots) {
-                callSupportDTO.setDateSlotId(slotOnDateDTO.getId());
-            } else {
-                String errorMessage = String.format("Slot are full for slotId :: %s and date :: %s", scheduleCall.getSlotId(), scheduleCall.getDate());
-                log.error(errorMessage);
-                throw new BookSlotException(errorMessage);
-            }
-
+            callSupportDTO.setDateSlotId(slotOnDateDTO.getId());
             CustomerDTO customerDTO = getCustomer(scheduleCall.getUserPhoneNumber());
             ProductDTO productDTO = productRepository.findByProductCode(scheduleCall.getProductCode());
             ProductsOfCustomerDTO productsOfCustomerDTO = productsOfCustomerRepository.findByProductIdAndCustomerId(productDTO.getId(), customerDTO.getId());
-
-            if (callSupportRepository.findIfSlotBookedIsUnique(productsOfCustomerDTO.getId(), slotOnDateDTO.getId()) != null) {
-                throw new BookSlotException("Slot already booked by user");
-            }
-
             callSupportDTO.setProductCustomerId(productsOfCustomerDTO.getId());
             callSupportDTO = callSupportRepository.save(callSupportDTO);
 
@@ -185,7 +122,7 @@ public class CustomerService {
     public CallSupportDTO cancelCall(BigInteger callId) throws CancelSlotException, EmailNotificationException {
 
         try {
-            ifSlotCanBeBookedAndCancelled(callId);
+            ifSlotCanBeCancelled(callId);
 
             CallSupportDTO callSupportDTO = callSupportRepository.findByid(callId);
             callSupportDTO.setCallStatus(CallStatus.Cancelled.name());
@@ -212,18 +149,101 @@ public class CustomerService {
     }
 
 
-    private void ifSlotCanBeBookedAndCancelled(BigInteger callId) throws CancelSlotException {
+
+    public CustomerDTO saveCustomer(Customer customer) throws EntitySaveException {
+        try {
+            log.info("Customer information received :: {}",customer.toString());
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setFirstName(customer.getFirstName());
+            customerDTO.setLastName(customer.getLastName());
+            customerDTO.setEmail(customer.getEmail());
+            customerDTO.setPhoneNumber(customer.getPhoneNumber());
+            customerDTO = customerRepository.save(customerDTO);
+            log.info("Customer information saved in database :: {}", customerDTO.toString());
+            return customerDTO;
+        }
+        catch(Exception ex) {
+            String errorMessage = "Error occured while saving customer..";
+            log.error(errorMessage);
+            throw new EntitySaveException(errorMessage);
+        }
+    }
+
+    private void ifSoltCanBeBooked(ScheduleCall scheduleCall) throws BookSlotException {
+        try {
+            String today = utility.getDateStringFromDate(utility.getFutureDate(0), dateFormat);
+
+            SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyDateAndSlotId(utility.getDateFromDateString(scheduleCall.getDate(), dateFormat), scheduleCall.getSlotId());
+            if (slotOnDateDTO == null) {
+                String errorMessage = String.format("Slot does not exist for slotId :: %s and date :: %s", scheduleCall.getSlotId(), scheduleCall.getDate());
+                log.error(errorMessage);
+                throw new BookSlotException(errorMessage);
+            }
+
+            if (slotOnDateDTO.getBookedCount() == maxNoOfSlots) {
+                String errorMessage = String.format("Slot are full for slotId :: %s and date :: %s", scheduleCall.getSlotId(), scheduleCall.getDate());
+                log.error(errorMessage);
+                throw new BookSlotException(errorMessage);
+            }
+
+            if(utility.getDateFromDateString(scheduleCall.getDate(),dateFormat).before(utility.getDateFromDateString(today,dateFormat)))
+                throw new BookSlotException("Customer cannot book the slot on previous dates");
+
+            CustomerDTO customerDTO = getCustomer(scheduleCall.getUserPhoneNumber());
+            List<CallSupportDTO> listForCallsOnDaySlot = callSupportRepository.findAllByDateSlotId(slotOnDateDTO.getId());
+
+            for(CallSupportDTO value:listForCallsOnDaySlot){
+                ProductsOfCustomerDTO productsOfCustomerDTOs=productsOfCustomerRepository.findByid(value.getProductCustomerId());
+                if(customerDTO.getId().equals(productsOfCustomerDTOs.getCustomerId()) &&
+                        !value.getCallStatus().equalsIgnoreCase(CallStatus.Cancelled.name())){
+                    throw new BookSlotException("User cannot book multiple calls in same slot");
+                }
+            }
+
+            if (today.equals(scheduleCall.getDate())) {
+                log.info("Checking time constraints for slot booking,if slot to be booked is within range of 2 hours");
+                String time = utility.getDateStringFromDate(utility.getFutureTime(0), timeFormat);
+                String future = utility.getDateStringFromDate(utility.getFutureTime(2), timeFormat);
+
+                List<SlotDTO> slotList = slotRepository.findByTime(time,future);
+                for (SlotDTO slotValue : slotList) {
+                    SlotDTO slotDTO = slotRepository.findBySlotId(scheduleCall.getSlotId());
+                    if (slotDTO.getStartTime().equals(slotValue.getStartTime()) && slotDTO.getEndTime().equals(slotValue.getEndTime()))
+                        throw new BookSlotException("Customer cannot book the slot, too late to book the slot");
+                }
+            }
+
+        }
+        catch (BookSlotException ex) {
+            log.error(ex.getMessage());
+            throw ex;
+        }
+        catch (Exception ex){
+            String errorMessage = String.format("Some exception occured while checking if slot can be booked.. with error ====> %s",ex.getMessage());
+            throw new BookSlotException(errorMessage);
+        }
+    }
+    private void ifSlotCanBeCancelled(BigInteger callId) throws CancelSlotException {
         try {
             String time = utility.getDateStringFromDate(utility.getFutureTime(0), timeFormat);
             String future = utility.getDateStringFromDate(utility.getFutureTime(2), timeFormat);
             String today = utility.getDateStringFromDate(utility.getFutureDate(0), dateFormat);
 
             CallSupportDTO callSupportDTO = callSupportRepository.findByid(callId);
+            if(callSupportDTO==null)
+                throw new CancelSlotException("Call doesnt exist,cant cancel!!");
+
             SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyid(callSupportDTO.getDateSlotId());
 
-            if(slotOnDateDTO.getBookedCount()==0) {
+            if(callSupportDTO.getCallStatus().equalsIgnoreCase(CallStatus.Cancelled.name()))
+                throw new CancelSlotException("Slot already cancelled by the user,cant cancel!!");
+
+            if(slotOnDateDTO.getBookedCount()==0)
                 throw new CancelSlotException("Slot already empty,cant cancel!!");
-            }
+
+
+            if(utility.getDateFromDateString(utility.getDateStringFromDate(slotOnDateDTO.getDate(),dateFormat),dateFormat).before(utility.getDateFromDateString(today,dateFormat)))
+                throw new BookSlotException("Customer cannot cancel the slot on previous dates");
 
             if (utility.getDateStringFromDate(slotOnDateDTO.getDate(), dateFormat).equals(today)) {
                 SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());
@@ -250,6 +270,7 @@ public class CustomerService {
     //generate contents for emailNotification
     private void sendEmailNotification(CallSupportDTO callSupportDTO,CallStatus callStatus) throws EmailNotificationException {
         try {
+            log.info("Generating data for send email notification for call :: {} for status :: {}",callSupportDTO.toString(),callStatus.name());
             SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyid(callSupportDTO.getDateSlotId());
             SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());
 
@@ -280,13 +301,15 @@ public class CustomerService {
     private void sendNotification(CustomerDTO customerDTO, ProductDTO productDTO, SlotDTO slotDTO, Date date, CallStatus callStatus) throws ParseException, EmailNotificationException {
         try {
             if (callStatus.equals(CallStatus.Booked)) {
-                String body = String.format(bookingConfirmationBody, slotDTO.getStartTime() + "-" + slotDTO.getEndTime(), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
+                String body = String.format(bookingConfirmationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),"hh:mm") + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),"hh:mm"), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
                 notificationService.sendEmail(customerDTO.getEmail(), bookingConfirmationSubject, body);
+                log.info("Email notification sent!!");
                 return;
             }
             if (callStatus.equals(CallStatus.Cancelled)) {
-                String body = String.format(bookingCancellationBody, slotDTO.getStartTime() + "-" + slotDTO.getEndTime().toString(), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
+                String body = String.format(bookingCancellationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),"hh:mm") + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),"hh:mm"), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
                 notificationService.sendEmail(customerDTO.getEmail(), bookingCancellationSubject, body);
+                log.info("Email notification sent!!");
                 return;
             }
         }
@@ -298,4 +321,14 @@ public class CustomerService {
         }
     }
 
+
+
+    public CustomerDTO getCustomer(ProductsOfCustomerDTO productsOfCustomerDTO){
+        return customerRepository.findByid(productsOfCustomerDTO.getCustomerId());
+    }
 }
+
+
+
+
+

@@ -3,6 +3,7 @@ package com.techSupport.intuitiveTechSupportapi.service;
 import com.techSupport.intuitiveTechSupportapi.entity.Product;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntitySaveException;
 import com.techSupport.intuitiveTechSupportapi.model.ProductDTO;
+import com.techSupport.intuitiveTechSupportapi.model.ProductsOfCustomerDTO;
 import com.techSupport.intuitiveTechSupportapi.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,9 @@ public class ProductService {
 
     private ProductDTO saveProduct(ProductDTO productDTO) {
         return productRepository.save(productDTO);
+    }
+
+    public ProductDTO getProduct(ProductsOfCustomerDTO productsOfCustomerDTO) {
+        return productRepository.findByid(productsOfCustomerDTO.getProductId());
     }
 }

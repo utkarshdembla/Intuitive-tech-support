@@ -16,4 +16,12 @@ public interface SlotRepository extends JpaRepository<SlotDTO, BigInteger> {
 
     @Query(value = "select * from slots where start_time between ?1 AND ?2",nativeQuery = true)
     List<SlotDTO> findByTime(String time, String endTime);
+
+  /*  @Query(value = "select * from slots where start_time > ?2",nativeQuery = true)
+    List<SlotDTO> findByTime(String time, String endTime);*/
+
+    @Query(value = "select * from slots where start_time > ?2",nativeQuery = true)
+    List<SlotDTO> findSlotsToBook( String endTime);
+
+
 }

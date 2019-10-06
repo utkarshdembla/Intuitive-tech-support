@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -48,7 +49,6 @@ public class SlotUpdateService {
         while(count<=slotDaysOpen) {
 
             String date = dateUtility.getDateStringFromDate(dateUtility.getFutureDate(count),dateFormat);
-
             if (slotOnDateRepository.findBydate(date).isEmpty()) {
                 for (SlotDTO value : slots) {
                     SlotOnDateDTO slotOnDateDTO = new SlotOnDateDTO();
@@ -63,14 +63,15 @@ public class SlotUpdateService {
         }
     }
 
-    private void deleteTodaySlot()
-    {
-        String date = dateUtility.getDateStringFromDate(dateUtility.getFutureDate(0),dateFormat);
+    private void deleteTodaySlot() throws ParseException {
 
-        if(!slotOnDateRepository.findBydate(date).isEmpty())
-        {
-            List<SlotOnDateDTO> slotOnDateList = slotOnDateRepository.findBydate(date);
-            for(SlotOnDateDTO slotOnDateDTO : slotOnDateList)
+        String date = dateUtility.getDateStringFromDate(dateUtility.getFutureDate(1),dateFormat);
+        Date today = dateUtility.getDateFromDateString(date,dateFormat);
+
+        List<SlotOnDateDTO> listSlotonDate = slotOnDateRepository.findForAllPreviousDates(today);
+
+        if(!listSlotonDate.isEmpty()){
+            for(SlotOnDateDTO slotOnDateDTO : listSlotonDate)
             {
                 log.info("Deleting slot-on-date {}",slotOnDateDTO.toString());
                 slotOnDateRepository.deleteById(slotOnDateDTO.getId());
