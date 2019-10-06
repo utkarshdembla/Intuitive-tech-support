@@ -3,6 +3,7 @@ package com.techSupport.intuitiveTechSupportapi.service;
 import com.techSupport.intuitiveTechSupportapi.appConstants.Constants;
 import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.EnumSlotAvailability;
 import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.SlotInfo;
+import com.techSupport.intuitiveTechSupportapi.exceptions.DataGenerationException;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
 import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
@@ -32,6 +33,9 @@ public class SlotService {
 
     @Value(Constants.dateFormat)
     private String dateFormat;
+
+    @Value(Constants.timeFormat)
+    private String timeFormat;
 
     @Value(Constants.maximumCallsInSlots)
     private int maxCallsInSlots;
@@ -94,8 +98,7 @@ public class SlotService {
         return slotRepository.findAll();
     }
 
-    private List<SlotInfo> getListSlotInfo(List<SlotOnDateDTO> listSlotOnDateDTO)
-    {
+    private List<SlotInfo> getListSlotInfo(List<SlotOnDateDTO> listSlotOnDateDTO) throws DataGenerationException {
         try {
             List<SlotInfo> listSoltInfo = new ArrayList<>();
             for (SlotOnDateDTO value : listSlotOnDateDTO) {
@@ -105,20 +108,23 @@ public class SlotService {
             return listSoltInfo;
         }
         catch (Exception ex){
-            log.error("Some error occured while generating list of slots..");
-            throw ex;
+            String errorMessage = "Some error occured while generating list of slots..";
+            log.error(errorMessage);
+            throw new DataGenerationException(errorMessage);
         }
     }
 
-    private SlotInfo getSlotInfo(SlotOnDateDTO slotOnDateDTO)
-    {
+    private SlotInfo getSlotInfo(SlotOnDateDTO slotOnDateDTO) throws DataGenerationException {
         try {
             SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());
 
+            if(slotDTO==null)
+                throw new EntityNotFoundException("No slot found");
+
             SlotInfo slotInfo = new SlotInfo();
             slotInfo.setSlotsBooked(slotOnDateDTO.getBookedCount());
-            slotInfo.setStartTime(utility.getDateStringFromDate(slotDTO.getStartTime(), "hh:mm"));
-            slotInfo.setEndTime(utility.getDateStringFromDate(slotDTO.getEndTime(), "hh:mm"));
+            slotInfo.setStartTime(utility.getDateStringFromDate(slotDTO.getStartTime(), timeFormat));
+            slotInfo.setEndTime(utility.getDateStringFromDate(slotDTO.getEndTime(), timeFormat));
             slotInfo.setDate(utility.getDateStringFromDate(slotOnDateDTO.getDate(), dateFormat));
 
             if(slotOnDateDTO.getBookedCount()<maxCallsInSlots)
@@ -130,7 +136,9 @@ public class SlotService {
         }
         catch(Exception ex)
         {
-            throw ex;
+            String errorMessage = "Not able to generate the slots info data";
+            log.error(errorMessage);
+            throw new DataGenerationException(errorMessage);
         }
     }
 }

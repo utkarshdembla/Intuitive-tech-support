@@ -60,6 +60,9 @@ public class CustomerService {
     @Value(Constants.maximumCallsInSlots)
     private int maxNoOfSlots;
 
+    @Value(Constants.bookingFreezeTime)
+    private int bookingFreezeTime;
+
     @Value(Constants.dateFormat)
     private String dateFormat;
 
@@ -203,7 +206,7 @@ public class CustomerService {
             if (today.equals(scheduleCall.getDate())) {
                 log.info("Checking time constraints for slot booking,if slot to be booked is within range of 2 hours");
                 String time = utility.getDateStringFromDate(utility.getFutureTime(0), timeFormat);
-                String future = utility.getDateStringFromDate(utility.getFutureTime(2), timeFormat);
+                String future = utility.getDateStringFromDate(utility.getFutureTime(bookingFreezeTime), timeFormat);
 
                 List<SlotDTO> slotList = slotRepository.findByTime(time,future);
                 for (SlotDTO slotValue : slotList) {
@@ -226,7 +229,7 @@ public class CustomerService {
     private void ifSlotCanBeCancelled(BigInteger callId) throws CancelSlotException {
         try {
             String time = utility.getDateStringFromDate(utility.getFutureTime(0), timeFormat);
-            String future = utility.getDateStringFromDate(utility.getFutureTime(2), timeFormat);
+            String future = utility.getDateStringFromDate(utility.getFutureTime(bookingFreezeTime), timeFormat);
             String today = utility.getDateStringFromDate(utility.getFutureDate(0), dateFormat);
 
             CallSupportDTO callSupportDTO = callSupportRepository.findByid(callId);
@@ -301,13 +304,13 @@ public class CustomerService {
     private void sendNotification(CustomerDTO customerDTO, ProductDTO productDTO, SlotDTO slotDTO, Date date, CallStatus callStatus) throws ParseException, EmailNotificationException {
         try {
             if (callStatus.equals(CallStatus.Booked)) {
-                String body = String.format(bookingConfirmationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),"hh:mm") + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),"hh:mm"), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
+                String body = String.format(bookingConfirmationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),timeFormat) + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),timeFormat), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
                 notificationService.sendEmail(customerDTO.getEmail(), bookingConfirmationSubject, body);
                 log.info("Email notification sent!!");
                 return;
             }
             if (callStatus.equals(CallStatus.Cancelled)) {
-                String body = String.format(bookingCancellationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),"hh:mm") + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),"hh:mm"), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
+                String body = String.format(bookingCancellationBody, utility.getDateStringFromDate(slotDTO.getStartTime(),timeFormat) + "-" + utility.getDateStringFromDate(slotDTO.getEndTime(),timeFormat), productDTO.getName(), utility.getDateStringFromDate(date, dateFormat));
                 notificationService.sendEmail(customerDTO.getEmail(), bookingCancellationSubject, body);
                 log.info("Email notification sent!!");
                 return;
