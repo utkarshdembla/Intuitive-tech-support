@@ -26,7 +26,7 @@ public class CallSupportService {
     private String dateFormat;
 
     @Value(Constants.timeFormat)
-    private String timeForamt;
+    private String timeFormat;
 
     @Autowired
     private DateUtility utility;
@@ -132,8 +132,8 @@ public class CallSupportService {
             callInfo.setPhoneNumber(customerDTO.getPhoneNumber());
             callInfo.setFirstName(customerDTO.getFirstName());
             callInfo.setLastName(customerDTO.getLastName());
-            callInfo.setStartTime(utility.getDateStringFromDate(slotDTO.getStartTime(),timeForamt));
-            callInfo.setEndTime(utility.getDateStringFromDate(slotDTO.getEndTime(),timeForamt));
+            callInfo.setStartTime(utility.getDateStringFromDate(slotDTO.getStartTime(),timeFormat));
+            callInfo.setEndTime(utility.getDateStringFromDate(slotDTO.getEndTime(),timeFormat));
             callInfo.setProductCode(productDTO.getProductCode());
             callInfo.setDate(utility.getDateStringFromDate(slotOnDateDTO.getDate(),dateFormat));
             callInfo.setTrainerId(callSupportDTO.getTrainerId());
