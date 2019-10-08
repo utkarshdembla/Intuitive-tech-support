@@ -20,7 +20,7 @@ public class TrainerController {
     @Autowired
     private TrainerService trainerService;
 
-    @PostMapping("/v1/bookSession/{callId}/{trainerId}")
+    @PostMapping("/v1/startSession/{callId}/{trainerId}")
     public CallSupportDTO bookSession(@PathVariable("callId")BigInteger callId,@PathVariable("trainerId")BigInteger trainerId) throws BookSlotException {
         return trainerService.bookSession(callId,trainerId);
     }
