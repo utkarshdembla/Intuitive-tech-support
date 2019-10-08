@@ -234,9 +234,6 @@ public class CustomerService {
 
             CallSupportDTO callSupportDTO = callSupportRepository.findByid(callId);
 
-            if(!callSupportDTO.getCallStatus().equalsIgnoreCase(CallStatus.Booked.name()))
-                throw new CancelSlotException("Cant cancel the slot, state not found as booked");
-
             if(callSupportDTO==null)
                 throw new CancelSlotException("Call doesnt exist,cant cancel!!");
 
