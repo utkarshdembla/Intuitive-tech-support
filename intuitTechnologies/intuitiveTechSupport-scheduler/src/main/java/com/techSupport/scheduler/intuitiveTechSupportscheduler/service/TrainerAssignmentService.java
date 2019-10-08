@@ -52,10 +52,17 @@ public class TrainerAssignmentService {
                 listOfCalls = callSupportRepository.findByDateSlotIdAndcallStatus(value.getId(), CallStatus.Booked.name());
 
                 for (CallSupportDTO callValue : listOfCalls) {
-                    TrainerDTO trainer = trainerQueue.remove();
-                    callValue.setTrainerId(trainer.getId());
-                    callSupportRepository.save(callValue);
-                    trainerQueue.add(trainer);
+                    if(callValue.getTrainerId()==null) {
+                        TrainerDTO trainer = trainerQueue.remove();
+                        CallSupportDTO callSupportDTO = callSupportRepository.findByDateSlotIdAndTrainerId(value.getId(), trainer.getId());
+                        if (callSupportDTO != null) {
+                            trainerQueue.add(trainer);
+                            trainer = trainerQueue.remove();
+                        }
+                        callValue.setTrainerId(trainer.getId());
+                        callSupportRepository.save(callValue);
+                        trainerQueue.add(trainer);
+                    }
                 }
             }
         }else{

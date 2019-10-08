@@ -13,12 +13,10 @@ public interface CallSupportRepository extends JpaRepository<CallSupportDTO, Big
 
     CallSupportDTO findByid(BigInteger id);
 
-/*    @Query(value = "select * from call_support where id = ?1 AND call_status = ?2 ",nativeQuery = true)
-    CallSupportDTO findByidAndcallStatus(BigInteger id, String status);*/
-
     @Query(value = "select * from call_support where date_slot_id = ?1 AND call_status = ?2 ",nativeQuery = true)
     List<CallSupportDTO> findByDateSlotIdAndcallStatus(BigInteger id, String status);
 
-   /* @Query(value = "select * from call_support where product_customer_id = ?1 AND date_slot_id = ?2 ",nativeQuery = true)
-    CallSupportDTO findIfSlotBookedIsUnique(BigInteger productCustomerId, BigInteger dateSlotId);*/
+    @Query(value = "select * from call_support where date_slot_id = ?1 AND trainer_id=?2 ",nativeQuery = true)
+    CallSupportDTO findByDateSlotIdAndTrainerId(BigInteger id, BigInteger trainerId);
+
 }

@@ -27,12 +27,14 @@ public class Scheduler {
     public void runSlotscheduler() throws ParseException {
         log.info("Running slot Scheduler");
         slotUpdateService.slotUpdate();
+        log.info("Slot scheduler completed");
     }
 
     @Scheduled(cron = "${support.scheduler.customer.cron}")
     public void runCustomerUpdateScheduler() throws ParseException, InterruptedException {
-        log.info("Running customer scheduler");
+        log.info("Running customer reminder scheduler");
         reminderService.sendReminderAlerts();
+        log.info("Customer reminder scheduler completed");
     }
 
     @Scheduled(cron = "${support.scheduler.trainer.cron}")
@@ -40,5 +42,6 @@ public class Scheduler {
     {
         log.info("Running trainer assignment scheduler");
         trainerAssignmentService.assignTrainer();
+        log.info("Trainer slot assignment scheduler completed");
     }
 }
