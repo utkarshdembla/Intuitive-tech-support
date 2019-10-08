@@ -16,6 +16,9 @@ public interface CallSupportRepository extends JpaRepository<CallSupportDTO, Big
     @Query(value = "select * from call_support where id = ?1 AND call_status = ?2 ",nativeQuery = true)
     CallSupportDTO findByidAndcallStatus(BigInteger id, String status);
 
+    @Query(value = "select * from call_support where id = ?1 AND call_status = ?3 AND trainer_id = ?2",nativeQuery = true)
+    CallSupportDTO findByCallIdTrainerIdCallStatus(BigInteger callId,BigInteger trainerId,String status);
+
     @Query(value = "select * from call_support where date_slot_id = ?1",nativeQuery = true)
     List<CallSupportDTO> findAllByDateSlotId(BigInteger dateSlotId);
 

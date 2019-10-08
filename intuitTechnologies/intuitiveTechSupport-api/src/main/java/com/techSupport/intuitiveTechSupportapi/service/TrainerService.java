@@ -5,10 +5,8 @@ import com.techSupport.intuitiveTechSupportapi.model.CallStatus;
 import com.techSupport.intuitiveTechSupportapi.model.CallSupportDTO;
 import com.techSupport.intuitiveTechSupportapi.repository.CallSupportRepository;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigInteger;
 
@@ -19,14 +17,14 @@ public class TrainerService {
     @Autowired
     private CallSupportRepository callSupportRepository;
 
-    public CallSupportDTO bookSession(BigInteger id) throws BookSlotException {
+    public CallSupportDTO bookSession(BigInteger callId,BigInteger trainerId) throws BookSlotException {
        try {
-           CallSupportDTO callSupportDTO = callSupportRepository.findByidAndcallStatus(id, CallStatus.Booked.name());
+           CallSupportDTO callSupportDTO = callSupportRepository.findByCallIdTrainerIdCallStatus(callId,trainerId,CallStatus.Booked.name());
            if (callSupportDTO != null) {
                callSupportDTO.setCallStatus(CallStatus.Started.name());
                return callSupportRepository.save(callSupportDTO);
            } else {
-               String errorMessage = "Not available for booking session";
+               String errorMessage = "Not available for starting session";
                throw new BookSlotException(errorMessage);
            }
        }catch (BookSlotException ex) {
@@ -40,9 +38,9 @@ public class TrainerService {
        }
     }
 
-    public CallSupportDTO completeSession(BigInteger id) throws BookSlotException {
+    public CallSupportDTO completeSession(BigInteger callId,BigInteger trainerId) throws BookSlotException {
         try {
-            CallSupportDTO callSupportDTO = callSupportRepository.findByidAndcallStatus(id, CallStatus.Started.name());
+            CallSupportDTO callSupportDTO = callSupportRepository.findByCallIdTrainerIdCallStatus(callId,trainerId,CallStatus.Started.name());
             if (callSupportDTO != null) {
                 callSupportDTO.setCallStatus(CallStatus.Completed.name());
                 return callSupportRepository.save(callSupportDTO);

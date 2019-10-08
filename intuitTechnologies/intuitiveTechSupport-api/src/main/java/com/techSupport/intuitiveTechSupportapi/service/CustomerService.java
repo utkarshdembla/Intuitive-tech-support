@@ -233,6 +233,10 @@ public class CustomerService {
             String today = utility.getDateStringFromDate(utility.getFutureDate(0), dateFormat);
 
             CallSupportDTO callSupportDTO = callSupportRepository.findByid(callId);
+
+            if(!callSupportDTO.getCallStatus().equalsIgnoreCase(CallStatus.Booked.name()))
+                throw new CancelSlotException("Cant cancel the slot, state not found as booked");
+
             if(callSupportDTO==null)
                 throw new CancelSlotException("Call doesnt exist,cant cancel!!");
 
@@ -247,6 +251,7 @@ public class CustomerService {
 
             if(utility.getDateFromDateString(utility.getDateStringFromDate(slotOnDateDTO.getDate(),dateFormat),dateFormat).before(utility.getDateFromDateString(today,dateFormat)))
                 throw new BookSlotException("Customer cannot cancel the slot on previous dates");
+
 
             if (utility.getDateStringFromDate(slotOnDateDTO.getDate(), dateFormat).equals(today)) {
                 SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());

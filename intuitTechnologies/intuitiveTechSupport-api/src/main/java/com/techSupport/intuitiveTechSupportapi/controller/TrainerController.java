@@ -1,5 +1,6 @@
 package com.techSupport.intuitiveTechSupportapi.controller;
 
+import com.techSupport.intuitiveTechSupportapi.exceptions.BookSlotException;
 import com.techSupport.intuitiveTechSupportapi.model.CallSupportDTO;
 import com.techSupport.intuitiveTechSupportapi.service.TrainerService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,13 @@ public class TrainerController {
     @Autowired
     private TrainerService trainerService;
 
-    @PostMapping("/v1/bookSession/{callId}")
-    public CallSupportDTO bookSession(@PathVariable("callId")BigInteger id) throws Exception {
-        return trainerService.bookSession(id);
+    @PostMapping("/v1/bookSession/{callId}/{trainerId}")
+    public CallSupportDTO bookSession(@PathVariable("callId")BigInteger callId,@PathVariable("trainerId")BigInteger trainerId) throws BookSlotException {
+        return trainerService.bookSession(callId,trainerId);
     }
 
-    @PostMapping("/v1/completeSession/{callId}")
-    public CallSupportDTO completeSession(@PathVariable("callId")BigInteger id) throws Exception {
-        return trainerService.completeSession(id);
+    @PostMapping("/v1/completeSession/{callId}/{trainerId}")
+    public CallSupportDTO completeSession(@PathVariable("callId")BigInteger callId,@PathVariable("trainerId")BigInteger trainerId) throws BookSlotException {
+        return trainerService.completeSession(callId,trainerId);
     }
 }
