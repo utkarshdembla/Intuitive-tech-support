@@ -1,11 +1,11 @@
 package com.techSupport.intuitiveTechSupportapi.service;
 
 import com.techSupport.intuitiveTechSupportapi.appConstants.Constants;
-import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.CallInfo;
+import com.techSupport.intuitiveTechSupportapi.entity.responsePojo.CallInfo;
 import com.techSupport.intuitiveTechSupportapi.exceptions.DataGenerationException;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
 import com.techSupport.intuitiveTechSupportapi.model.*;
-import com.techSupport.intuitiveTechSupportapi.repository.*;
+import com.techSupport.intuitiveTechSupportapi.respositoryHandler.*;
 import com.techSupport.intuitiveTechSupportapi.utility.DateUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,35 +32,37 @@ public class CallSupportService {
     private DateUtility utility;
 
     @Autowired
-    private SlotOnDateRepository slotOnDateRepository;
-
-    @Autowired
-    private CallSupportRepository callSupportRepository;
-
-    @Autowired
-    private ProductsOfCustomerRepository productsOfCustomerRepository;
-
-    @Autowired
-    private SlotRepository slotRepository;
-
-    @Autowired
     private CustomerService customerService;
 
     @Autowired
-    private ProductService productService;
+    private ProductRepoHandler productRepoHandler;
 
+    @Autowired
+    private CustomerRepoHandler customerRepoHandler;
+
+    @Autowired
+    private ProductOfCustomerRepoHandler productOfCustomerRepoHandler;
+
+    @Autowired
+    private SlotRepoHandler slotRepoHandler;
+
+    @Autowired
+    private SlotOnDateRepoHandler slotOnDateRepoHandler;
+
+    @Autowired
+    private CallSupportRepoHandler callSupportRepoHandler;
 
     public List<CallInfo> getAllCallsInfoByDate(String date) throws DataGenerationException, EntityNotFoundException, ParseException {
 
             log.info("Generating all calls on date ==> {}",date);
             Date inputDate = utility.getDateFromDateString(date, dateFormat);
-            List<SlotOnDateDTO> listOfSlotOnDate = slotOnDateRepository.findBydate(inputDate);
+            List<SlotOnDateDTO> listOfSlotOnDate = slotOnDateRepoHandler.findByDate(inputDate);
             log.info("Slots on data data received ==> {}",listOfSlotOnDate.toString());
 
             List<CallSupportDTO> listCallSupportDTO = new ArrayList<>();
 
             for (SlotOnDateDTO value : listOfSlotOnDate) {
-                listCallSupportDTO.addAll(callSupportRepository.findAllByDateSlotId(value.getId()));
+                listCallSupportDTO.addAll(callSupportRepoHandler.findAllByDateSlotId(value.getId()));
             }
 
             log.info("Call Support Data information ==> {}", listCallSupportDTO.toString());
@@ -73,12 +75,13 @@ public class CallSupportService {
 
             log.info("Generating all calls for customer..");
             CustomerDTO customerDTO = customerService.getCustomer(searchString);
+
             log.info("Customer date received ==> {}", customerDTO.toString());
-            List<ProductsOfCustomerDTO> listProductsOfCustomer = productsOfCustomerRepository.findByCustomerId(customerDTO.getId());
+            List<ProductsOfCustomerDTO> listProductsOfCustomer = productOfCustomerRepoHandler.findByCustomerId(customerDTO.getId());
             List<CallSupportDTO> listCallSupportDTO = new ArrayList<>();
 
             for (ProductsOfCustomerDTO value : listProductsOfCustomer) {
-                listCallSupportDTO.addAll(callSupportRepository.findAllByProductOfCustomerId(value.getId()));
+                listCallSupportDTO.addAll(callSupportRepoHandler.findAllByProductofCustomerId(value.getId()));
             }
 
             log.info("Call Support Data information ==> {}", listCallSupportDTO.toString());
@@ -87,7 +90,7 @@ public class CallSupportService {
     }
 
     public List<CallInfo> getAllCalls() throws DataGenerationException, EntityNotFoundException {
-            return getCallInfoList(callSupportRepository.findAll());
+            return getCallInfoList(callSupportRepoHandler.findAll());
     }
 
 
@@ -120,13 +123,14 @@ public class CallSupportService {
     private CallInfo getCallInfo(CallSupportDTO callSupportDTO) throws DataGenerationException {
         try{
             CallInfo callInfo = new CallInfo();
-            ProductsOfCustomerDTO productsOfCustomerDTO =  productsOfCustomerRepository.findByid(callSupportDTO.getProductCustomerId());
-            SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyid(callSupportDTO.getDateSlotId());
+            ProductsOfCustomerDTO productsOfCustomerDTO =  productOfCustomerRepoHandler.findById(callSupportDTO.getProductCustomerId());
+            SlotOnDateDTO slotOnDateDTO = slotOnDateRepoHandler.findbyId(callSupportDTO.getDateSlotId());
 
-            CustomerDTO customerDTO = customerService.getCustomer(productsOfCustomerDTO);
-            ProductDTO productDTO = productService.getProduct(productsOfCustomerDTO);
-            SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());
+            CustomerDTO customerDTO = customerRepoHandler.findById(productsOfCustomerDTO.getCustomerId());
+            ProductDTO productDTO = productRepoHandler.findByProductId(productsOfCustomerDTO.getProductId());
+            SlotDTO slotDTO = slotRepoHandler.findBySlotId(slotOnDateDTO.getSlotId());
 
+            callInfo.setId(callSupportDTO.getId());
             callInfo.setCallStatus(callSupportDTO.getCallStatus());
             callInfo.setEmailId(customerDTO.getEmail());
             callInfo.setPhoneNumber(customerDTO.getPhoneNumber());
@@ -148,4 +152,8 @@ public class CallSupportService {
         }
     }
 
+
+    public CallSupportDTO saveCallSupportDto(CallSupportDTO callSupportDTO){
+        return callSupportRepoHandler.saveCallSupport(callSupportDTO);
+    }
 }

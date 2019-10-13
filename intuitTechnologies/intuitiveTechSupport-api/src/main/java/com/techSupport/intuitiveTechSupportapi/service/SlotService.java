@@ -1,14 +1,14 @@
 package com.techSupport.intuitiveTechSupportapi.service;
 
 import com.techSupport.intuitiveTechSupportapi.appConstants.Constants;
-import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.EnumSlotAvailability;
-import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.SlotInfo;
+import com.techSupport.intuitiveTechSupportapi.entity.responsePojo.EnumSlotAvailability;
+import com.techSupport.intuitiveTechSupportapi.entity.responsePojo.SlotInfo;
 import com.techSupport.intuitiveTechSupportapi.exceptions.DataGenerationException;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
 import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
-import com.techSupport.intuitiveTechSupportapi.repository.SlotOnDateRepository;
-import com.techSupport.intuitiveTechSupportapi.repository.SlotRepository;
+import com.techSupport.intuitiveTechSupportapi.respositoryHandler.SlotOnDateRepoHandler;
+import com.techSupport.intuitiveTechSupportapi.respositoryHandler.SlotRepoHandler;
 import com.techSupport.intuitiveTechSupportapi.utility.DateUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +22,17 @@ import java.util.List;
 @Service
 public class SlotService {
 
-    @Autowired
-    private SlotRepository slotRepository;
+    /*@Autowired
+    private SlotRepo slotRepository;
 
     @Autowired
-    private SlotOnDateRepository slotOnDateRepository;
+    private SlotOnDateRepo slotOnDateRepository;*/
+
+    @Autowired
+    private SlotRepoHandler slotRepoHandler;
+
+    @Autowired
+    private SlotOnDateRepoHandler slotOnDateRepoHandler;
 
     @Autowired
     private DateUtility utility;
@@ -55,7 +61,7 @@ public class SlotService {
             if(inputDate.equals(currentDate)) {
                 log.info("Input date is found to be current date");
 
-                for (SlotDTO value : slotRepository.findAll()) {
+                for (SlotDTO value : slotRepoHandler.findAllSlots()) {
                     Date startTime = utility.getDateWithTime(value.getStartTime());
                     Date currentTime = utility.getDateWithTime(null);
                     if (startTime.before(currentTime))
@@ -63,7 +69,7 @@ public class SlotService {
                 }
 
                 for(SlotDTO value :listOfSlotsBeforeTime){
-                    SlotOnDateDTO slotOnDateDTO = slotOnDateRepository.findbyDateAndSlotId(inputDate,value.getId());
+                    SlotOnDateDTO slotOnDateDTO = slotOnDateRepoHandler.findByDateAndSlotId(inputDate,value.getId());
                     listOfSlotsOnDate.add(slotOnDateDTO);
                 }
             }
@@ -91,12 +97,10 @@ public class SlotService {
 
 
     public List<SlotOnDateDTO> getSlotForDate(Date date){
-        return slotOnDateRepository.findBydate(date);
+        return slotOnDateRepoHandler.findByDate(date);
     }
 
-    public List<SlotDTO> getAllSlots(){
-        return slotRepository.findAll();
-    }
+    public List<SlotDTO> getAllSlots(){ return slotRepoHandler.findAllSlots(); }
 
     private List<SlotInfo> getListSlotInfo(List<SlotOnDateDTO> listSlotOnDateDTO) throws DataGenerationException {
         try {
@@ -116,12 +120,14 @@ public class SlotService {
 
     private SlotInfo getSlotInfo(SlotOnDateDTO slotOnDateDTO) throws DataGenerationException {
         try {
-            SlotDTO slotDTO = slotRepository.findBySlotId(slotOnDateDTO.getSlotId());
+            SlotDTO slotDTO = slotRepoHandler.findBySlotId(slotOnDateDTO.getSlotId());
 
             if(slotDTO==null)
                 throw new EntityNotFoundException("No slot found");
 
             SlotInfo slotInfo = new SlotInfo();
+            slotInfo.setDateSlotId(slotOnDateDTO.getId());
+            slotInfo.setSlotId(slotDTO.getId());
             slotInfo.setSlotsBooked(slotOnDateDTO.getBookedCount());
             slotInfo.setStartTime(utility.getDateStringFromDate(slotDTO.getStartTime(), timeFormat));
             slotInfo.setEndTime(utility.getDateStringFromDate(slotDTO.getEndTime(), timeFormat));
@@ -140,5 +146,11 @@ public class SlotService {
             log.error(errorMessage);
             throw new DataGenerationException(errorMessage);
         }
+    }
+
+    public SlotOnDateDTO updateSlotOnBookingCancellation(SlotOnDateDTO slotOnDateDTO,int count){
+        slotOnDateDTO.setBookedCount(slotOnDateDTO.getBookedCount() + count);
+        return slotOnDateDTO;
+
     }
 }

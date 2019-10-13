@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface SlotRepository extends JpaRepository<SlotDTO, BigInteger> {
+public interface SlotRepo extends JpaRepository<SlotDTO, BigInteger> {
 
     @Query(value = "select * from slots where id = ?1",nativeQuery = true)
     SlotDTO findBySlotId(BigInteger id);

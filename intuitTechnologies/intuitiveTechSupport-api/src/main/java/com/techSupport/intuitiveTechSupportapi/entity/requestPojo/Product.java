@@ -1,4 +1,4 @@
-package com.techSupport.intuitiveTechSupportapi.entity;
+package com.techSupport.intuitiveTechSupportapi.entity.requestPojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

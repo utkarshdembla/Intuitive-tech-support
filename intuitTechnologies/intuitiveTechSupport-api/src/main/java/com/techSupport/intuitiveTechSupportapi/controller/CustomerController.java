@@ -1,21 +1,16 @@
 package com.techSupport.intuitiveTechSupportapi.controller;
 
 
-import com.techSupport.intuitiveTechSupportapi.entity.Customer;
-import com.techSupport.intuitiveTechSupportapi.entity.ScheduleCall;
+import com.techSupport.intuitiveTechSupportapi.entity.requestPojo.Customer;
+import com.techSupport.intuitiveTechSupportapi.entity.requestPojo.ScheduleCall;
 import com.techSupport.intuitiveTechSupportapi.exceptions.*;
 import com.techSupport.intuitiveTechSupportapi.model.*;
-import com.techSupport.intuitiveTechSupportapi.repository.CustomerRepository;
 import com.techSupport.intuitiveTechSupportapi.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 @Slf4j

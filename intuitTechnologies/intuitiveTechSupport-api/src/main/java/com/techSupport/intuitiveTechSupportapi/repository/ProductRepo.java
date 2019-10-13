@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductDTO, BigInteger> {
+public interface ProductRepo extends JpaRepository<ProductDTO, BigInteger> {
 
     ProductDTO findByProductCode(String name);
     ProductDTO findByid(BigInteger id);

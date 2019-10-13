@@ -1,6 +1,7 @@
 package com.techSupport.intuitiveTechSupportapi.repository;
 
 import com.techSupport.intuitiveTechSupportapi.model.ProductsOfCustomerDTO;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface ProductsOfCustomerRepository extends CrudRepository<ProductsOfCustomerDTO, BigInteger> {
+public interface ProductsOfCustomerRepo extends JpaRepository<ProductsOfCustomerDTO, BigInteger> {
 
     ProductsOfCustomerDTO findByProductIdAndCustomerId(BigInteger pId,BigInteger cId);
 

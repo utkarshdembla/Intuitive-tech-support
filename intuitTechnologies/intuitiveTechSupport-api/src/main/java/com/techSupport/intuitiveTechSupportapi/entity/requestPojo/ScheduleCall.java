@@ -1,13 +1,11 @@
-package com.techSupport.intuitiveTechSupportapi.entity;
+package com.techSupport.intuitiveTechSupportapi.entity.requestPojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor

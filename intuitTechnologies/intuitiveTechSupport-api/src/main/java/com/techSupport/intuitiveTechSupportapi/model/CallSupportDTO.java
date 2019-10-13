@@ -40,7 +40,7 @@ public class CallSupportDTO {
 
     @NotNull
     @Column(name="call_status")
-    private String callStatus=CallStatus.Booked.name();
+    private String callStatus;
 
     @Column(nullable = false, updatable = false, name = "created_at")
     @Temporal(TemporalType.DATE)

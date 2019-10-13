@@ -1,4 +1,4 @@
-package com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity;
+package com.techSupport.intuitiveTechSupportapi.entity.responsePojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -7,11 +7,18 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigInteger;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class SlotInfo {
+
+    @JsonProperty("date_slot_id")
+    private BigInteger dateSlotId;
+
+    @JsonProperty("slot_id")
+    private BigInteger slotId;
 
     @JsonProperty("start_time")
     private String startTime;

@@ -1,6 +1,6 @@
 package com.techSupport.intuitiveTechSupportapi.controller;
 
-import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.CallInfo;
+import com.techSupport.intuitiveTechSupportapi.entity.responsePojo.CallInfo;
 import com.techSupport.intuitiveTechSupportapi.exceptions.DataGenerationException;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
 import com.techSupport.intuitiveTechSupportapi.service.CallSupportService;

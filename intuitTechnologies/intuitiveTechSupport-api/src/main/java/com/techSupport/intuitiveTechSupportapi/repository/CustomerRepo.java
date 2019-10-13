@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<CustomerDTO, BigInteger> {
+public interface CustomerRepo extends JpaRepository<CustomerDTO, BigInteger> {
     CustomerDTO findByPhoneNumber(String phonenumber);
     CustomerDTO findByEmail(String email);
     CustomerDTO findByid(BigInteger id);

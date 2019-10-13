@@ -1,9 +1,8 @@
 package com.techSupport.intuitiveTechSupportapi.controller;
 
 
-import com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity.SlotInfo;
+import com.techSupport.intuitiveTechSupportapi.entity.responsePojo.SlotInfo;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
-import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
 import com.techSupport.intuitiveTechSupportapi.service.CallSupportService;
 import com.techSupport.intuitiveTechSupportapi.service.SlotService;
 import lombok.extern.slf4j.Slf4j;

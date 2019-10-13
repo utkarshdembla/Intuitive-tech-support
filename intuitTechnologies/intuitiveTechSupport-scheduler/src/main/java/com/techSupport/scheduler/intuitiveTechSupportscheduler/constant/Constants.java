@@ -6,6 +6,9 @@ public class Constants {
     public static final String mailServicePort = "${spring.mail.port}";
     public static final String mailServiceUsername = "${spring.mail.username}";
     public static final String mailServicePassword = "${spring.mail.password}";
+    public static final String mailFrom="${spring.mail.from.support}";
+
+
     public static final String dateFormat = "${date.format}";
     public static final String timeFormat = "${time.format}";
     public static final String slotDaysOpen = "${slots.open.days}";

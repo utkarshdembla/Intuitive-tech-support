@@ -3,7 +3,7 @@ package com.techSupport.intuitiveTechSupportapi.service;
 import com.techSupport.intuitiveTechSupportapi.exceptions.BookSlotException;
 import com.techSupport.intuitiveTechSupportapi.model.CallStatus;
 import com.techSupport.intuitiveTechSupportapi.model.CallSupportDTO;
-import com.techSupport.intuitiveTechSupportapi.repository.CallSupportRepository;
+import com.techSupport.intuitiveTechSupportapi.repository.CallSupportRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.math.BigInteger;
 public class TrainerService {
 
     @Autowired
-    private CallSupportRepository callSupportRepository;
+    private CallSupportRepo callSupportRepository;
 
     public CallSupportDTO bookSession(BigInteger callId,BigInteger trainerId) throws BookSlotException {
        try {

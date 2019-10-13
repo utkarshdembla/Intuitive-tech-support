@@ -23,13 +23,15 @@ public class EmailService {
     @Value(Constants.mailServicePassword)
     private String password;
 
+    @Value(Constants.mailFrom)
+    private String mailFrom;
+
     public void sendEmail(String setTo,String setSubject,String setBody)
     {
         JavaMailSenderImpl javaMailSender = setProperties();
-
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(setTo);
-        simpleMailMessage.setFrom("reply@IntuitiveSupport.com");
+        simpleMailMessage.setFrom(mailFrom);
         simpleMailMessage.setSubject(setSubject);
         simpleMailMessage.setText(setBody);
 
@@ -39,10 +41,10 @@ public class EmailService {
     private JavaMailSenderImpl setProperties()
     {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        javaMailSenderImpl.setHost("smtp.mailtrap.io");
-        javaMailSenderImpl.setPort(2525);
-        javaMailSenderImpl.setUsername("8577ade2de686d");
-        javaMailSenderImpl.setPassword("7b3b94f9ea4946");
+        javaMailSenderImpl.setHost(host);
+        javaMailSenderImpl.setPort(port);
+        javaMailSenderImpl.setUsername(username);
+        javaMailSenderImpl.setPassword(password);
 
         return javaMailSenderImpl;
     }

@@ -1,4 +1,4 @@
-package com.techSupport.intuitiveTechSupportapi.entity.ResponseEntity;
+package com.techSupport.intuitiveTechSupportapi.entity.responsePojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
-import java.sql.Time;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CallInfo {
+
+    @JsonProperty("call_id")
+    private BigInteger id;
 
     @JsonProperty("call_status")
     private String callStatus;

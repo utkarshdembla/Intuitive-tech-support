@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface CallSupportRepository extends JpaRepository<CallSupportDTO, BigInteger> {
+public interface CallSupportRepo extends JpaRepository<CallSupportDTO, BigInteger> {
 
     CallSupportDTO findByid(BigInteger id);
 
@@ -24,8 +24,5 @@ public interface CallSupportRepository extends JpaRepository<CallSupportDTO, Big
 
     @Query(value = "select * from call_support where product_customer_id = ?1",nativeQuery = true)
     List<CallSupportDTO> findAllByProductOfCustomerId(BigInteger productCustomerId);
-
-
-
 
 }

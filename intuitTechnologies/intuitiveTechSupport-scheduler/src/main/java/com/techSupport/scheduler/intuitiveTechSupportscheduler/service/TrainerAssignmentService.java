@@ -41,7 +41,11 @@ public class TrainerAssignmentService {
     private String dateFormat;
 
     public void assignTrainer(){
+
+        log.info("Getting all trainers to be scheduled for calls..");
         Queue<TrainerDTO>  trainerQueue = getAllTrainersQueued();
+
+        log.info("Assigning slots to trainers.. ");
         String today = dateUtility.getDateStringFromDate(dateUtility.getFutureDate(0), dateFormat);
         List<SlotOnDateDTO> listOfSlotOnDate = slotOnDateRepository.findBydate(today);
 
@@ -60,7 +64,8 @@ public class TrainerAssignmentService {
                             trainer = trainerQueue.remove();
                         }
                         callValue.setTrainerId(trainer.getId());
-                        callSupportRepository.save(callValue);
+                        callValue=callSupportRepository.save(callValue);
+                        log.info("Trainer assigned to call :: {}",callValue.toString());
                         trainerQueue.add(trainer);
                     }
                 }
@@ -75,6 +80,7 @@ public class TrainerAssignmentService {
         Queue<TrainerDTO>  queue = new LinkedList<>();
         queue.addAll(listOfAllTrainers);
 
+        log.info("Trainers added to queue..");
         return queue;
     }
 }

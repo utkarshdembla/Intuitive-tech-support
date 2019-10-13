@@ -1,27 +1,25 @@
 package com.techSupport.intuitiveTechSupportapi.service;
 
-import com.techSupport.intuitiveTechSupportapi.entity.Product;
+import com.techSupport.intuitiveTechSupportapi.entity.requestPojo.Product;
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntitySaveException;
 import com.techSupport.intuitiveTechSupportapi.model.ProductDTO;
-import com.techSupport.intuitiveTechSupportapi.model.ProductsOfCustomerDTO;
-import com.techSupport.intuitiveTechSupportapi.repository.ProductRepository;
+import com.techSupport.intuitiveTechSupportapi.respositoryHandler.ProductRepoHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.text.ParseException;
 
 @Slf4j
 @Service
 public class ProductService {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductRepoHandler productRepoHandler;
 
     public ProductDTO getProduct(String productCode) {
         try {
-            return productRepository.findByProductCode(productCode);
+            return productRepoHandler.findByProductCode(productCode);
         }catch (Exception ex)
         {
             String error = String.format("Entity not found ==> %s",ex.getMessage());
@@ -46,10 +44,10 @@ public class ProductService {
     }
 
     private ProductDTO saveProduct(ProductDTO productDTO) {
-        return productRepository.save(productDTO);
+        return productRepoHandler.saveProduct(productDTO);
     }
 
-    public ProductDTO getProduct(ProductsOfCustomerDTO productsOfCustomerDTO) {
+    /*public ProductDTO getProduct(ProductsOfCustomerDTO productsOfCustomerDTO) {
         return productRepository.findByid(productsOfCustomerDTO.getProductId());
-    }
+    }*/
 }

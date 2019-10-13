@@ -2,6 +2,7 @@ package com.techSupport.intuitiveTechSupportapi.repository;
 
 import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface SlotOnDateRepository extends CrudRepository<SlotOnDateDTO, BigInteger> {
+public interface SlotOnDateRepo extends JpaRepository<SlotOnDateDTO, BigInteger> {
 
 
     @Query(value = "select * from date_slots where date = ?1 AND slot_id = ?2 ",nativeQuery = true)

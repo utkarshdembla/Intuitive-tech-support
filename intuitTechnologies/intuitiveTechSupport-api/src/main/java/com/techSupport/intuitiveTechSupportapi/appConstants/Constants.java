@@ -17,10 +17,12 @@ public class Constants {
     public static final String mailServicePort = "${spring.mail.port}";
     public static final String mailServiceUsername = "${spring.mail.username}";
     public static final String mailServicePassword = "${spring.mail.password}";
+    public static final String mailFrom="${spring.mail.from.support}";
 
     public static final String securityUSERusername="${spring.security.user.username}";
     public static final String securityUSERpaassword="${spring.security.user.password}";
     public static final String securityADMINusername="${spring.security.admin.username}";
     public static final String securityADMINpassword="${spring.security.admin.password}";
+
 
 }

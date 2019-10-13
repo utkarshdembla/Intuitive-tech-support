@@ -1,16 +1,11 @@
 package com.techSupport.intuitiveTechSupportapi.service;
 
 import com.techSupport.intuitiveTechSupportapi.appConstants.Constants;
-import com.techSupport.intuitiveTechSupportapi.model.CallStatus;
-import com.techSupport.intuitiveTechSupportapi.model.CustomerDTO;
-import com.techSupport.intuitiveTechSupportapi.model.ProductDTO;
-import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 
 @Service
 public class NotificationService {
@@ -27,13 +22,16 @@ public class NotificationService {
     @Value(Constants.mailServicePassword)
     private String password;
 
+    @Value(Constants.mailFrom)
+    private String mailFrom;
+
     public void sendEmail(String setTo,String setSubject,String setBody)
     {
         JavaMailSenderImpl javaMailSender = setProperties();
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(setTo);
-        simpleMailMessage.setFrom("reply@IntuitiveSupport.com");
+        simpleMailMessage.setFrom(mailFrom);
         simpleMailMessage.setSubject(setSubject);
         simpleMailMessage.setText(setBody);
 
