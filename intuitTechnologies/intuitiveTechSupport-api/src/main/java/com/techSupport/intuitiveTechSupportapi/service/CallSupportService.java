@@ -56,7 +56,7 @@ public class CallSupportService {
 
             log.info("Generating all calls on date ==> {}",date);
             Date inputDate = utility.getDateFromDateString(date, dateFormat);
-            List<SlotOnDateDTO> listOfSlotOnDate = slotOnDateRepoHandler.findByDate(inputDate);
+            List<SlotOnDateDTO> listOfSlotOnDate = slotOnDateRepoHandler.findBydate(inputDate);
             log.info("Slots on data data received ==> {}",listOfSlotOnDate.toString());
 
             List<CallSupportDTO> listCallSupportDTO = new ArrayList<>();

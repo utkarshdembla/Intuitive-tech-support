@@ -21,6 +21,7 @@ public interface SlotOnDateRepo extends JpaRepository<SlotOnDateDTO, BigInteger>
     @Query(value = "select * from date_slots where id = ?1",nativeQuery = true)
     SlotOnDateDTO findbyid(BigInteger id);
 
+    @Query(value = "select * from date_slots where date = ?1",nativeQuery = true)
     List<SlotOnDateDTO> findBydate(Date date);
 
     @Query(value = "select * from slots where date = ?1 AND start_time after ?2",nativeQuery = true)

@@ -7,6 +7,8 @@ import com.techSupport.intuitiveTechSupportapi.exceptions.DataGenerationExceptio
 import com.techSupport.intuitiveTechSupportapi.exceptions.EntityNotFoundException;
 import com.techSupport.intuitiveTechSupportapi.model.SlotDTO;
 import com.techSupport.intuitiveTechSupportapi.model.SlotOnDateDTO;
+import com.techSupport.intuitiveTechSupportapi.repository.SlotOnDateRepo;
+import com.techSupport.intuitiveTechSupportapi.repository.SlotRepo;
 import com.techSupport.intuitiveTechSupportapi.respositoryHandler.SlotOnDateRepoHandler;
 import com.techSupport.intuitiveTechSupportapi.respositoryHandler.SlotRepoHandler;
 import com.techSupport.intuitiveTechSupportapi.utility.DateUtility;
@@ -22,11 +24,11 @@ import java.util.List;
 @Service
 public class SlotService {
 
-    /*@Autowired
+    @Autowired
     private SlotRepo slotRepository;
 
     @Autowired
-    private SlotOnDateRepo slotOnDateRepository;*/
+    private SlotOnDateRepo slotOnDateRepository;
 
     @Autowired
     private SlotRepoHandler slotRepoHandler;
@@ -97,7 +99,7 @@ public class SlotService {
 
 
     public List<SlotOnDateDTO> getSlotForDate(Date date){
-        return slotOnDateRepoHandler.findByDate(date);
+        return slotOnDateRepoHandler.findBydate(date);
     }
 
     public List<SlotDTO> getAllSlots(){ return slotRepoHandler.findAllSlots(); }

@@ -232,6 +232,7 @@ public class CustomerService {
     public CustomerDTO saveCustomer(Customer customer) throws EntitySaveException {
         try {
             CustomerDTO customerDTO = generateCustomerData(customer);
+            customerDTO = customerRepoHandler.saveCustomer(customerDTO);
             log.info("Customer information saved in database :: {}", customerDTO.toString());
             return customerDTO;
         }

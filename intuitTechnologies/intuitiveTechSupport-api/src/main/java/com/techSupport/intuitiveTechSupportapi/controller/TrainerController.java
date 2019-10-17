@@ -14,7 +14,7 @@ import java.math.BigInteger;
 
 @Slf4j
 @RestController
-@RequestMapping("/trainer/call")
+@RequestMapping("/techsupport/trainer")
 public class TrainerController {
 
     @Autowired
